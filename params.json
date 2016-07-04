@@ -1,0 +1,6 @@
+{
+  "name": "dumpnwpass",
+  "tagline": "Tool written in Ruby that dumps already entered network passwords when given root privileges.",
+  "body": "##CAN HAZ R00T??? KTHXBYE!!1!11!!\r\nYou **NEED** to run the script as root. Otherwise it won't be able to look into the files!\r\n\r\n###Output looks like this:\r\nnetwork => pass",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
