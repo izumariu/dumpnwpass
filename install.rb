@@ -14,9 +14,9 @@ end
 
 case ARGV[0]
 	when "-i"
+		require 'net/http'
 		if File.exist?("/bin/dumpnwpass")
-			require 'net/http'
-			File.open("/bin/dumpnwpass") do |f|
+			File.open("/bin/dumpnwpass","w") do |f|
 				f << Net::HTTP.get(URI("https://raw.githubusercontent.com/sesshomariu/dumpnwpass/master/dumpnwpass.rb"))
 			end
 		else
@@ -24,7 +24,7 @@ case ARGV[0]
 				print `sudo cp dumpnwpass.rb /bin/dumpnwpass; sudo chmod +x /bin/dumpnwpass`
 			else
 				begin
-					File.open("dumpnwpass.rb") do |f|
+					File.open("dumpnwpass.rb","w") do |f|
 						f << Net::HTTP.get(URI("https://raw.githubusercontent.com/sesshomariu/dumpnwpass/master/dumpnwpass.rb"))
 					end
 					print `sudo cp dumpnwpass.rb /bin/dumpnwpass; sudo chmod +x /bin/dumpnwpass`
