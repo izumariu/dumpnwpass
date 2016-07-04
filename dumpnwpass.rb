@@ -5,23 +5,26 @@ $DEFPATH = "/etc/NetworkManager/system-connections/"
 networks = `ls #{$DEFPATH}`.split("\n")
 npass = Hash.new
 
+$counts = [0,0]
+
 def is_eth?(f)
 	File.open("#{$DEFPATH}#{f}","r").each_line do |l|
-		return true if l.chomp=="[ethernet]"
+		($counts[1]+=1;return true) if l.chomp=="[ethernet]"
 	end
 	false
 end
 
 def getPass(f)
 	File.open("#{$DEFPATH}#{f}","r").each_line do |l|
-		return l.chomp.split("psk=")[1] if l.chomp.match(/^psk=.{1,}$/)
+		($counts[0]+=1;return l.chomp.split("psk=")[1]) if l.chomp.match(/^psk=.{1,}$/)
 	end
-	"<[Probably public hotspot with paywall]>"
+	$counts[1]+=1
+	"<[PROBABLY PUBLIC HOTSPOT WITH PAYWALL]>"
 end
 
 networks.each do |n|
 	if is_eth?(n)
-		npass[n] = "<[Ethernet]>"
+		npass[n] = "<[ETHERNET]>"
 	else
 		npass[n] = getPass(n)
 	end
@@ -29,4 +32,5 @@ end
 
 counter = 0
 npass.each_key{|k|counter=k.length if k.length>counter}
-npass.each_key{|k|(counter-k.length).times{print(" ")};puts("#{k} => #{npass[k]}")}
+puts;npass.each_key{|k|(counter-k.length).times{print(" ")};puts("#{k} => #{npass[k]}")}
+puts;puts("#{$counts[0]} passwords dumped, #{$counts[1]} fails, #{($counts[0]*100)/networks.length}% success")
