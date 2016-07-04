@@ -33,8 +33,9 @@ end
 def getMac(f)
 	return "" if !$macs
 	File.open("#{$DEFPATH}#{f}","r").each_line do |l|
-		($counts[0]+=1;return " | MAC = #{l.chomp.split("mac-address=")[1]}") if l.chomp.match(/^mac-address=.{1,}$/)
+		(return " | MAC = #{l.chomp.split("mac-address=")[1]}") if l.chomp.match(/^mac-address=.{1,}$/)
 	end
+	return " | MAC =      UNKNOWN     "
 end
 
 networks.each do |n|
@@ -48,4 +49,4 @@ end
 counter = 0
 npass.each_key{|k|counter=k.length if k.length>counter}
 puts;npass.each_key{|k|(counter-k.length).times{print(" ")};puts("#{k} => #{npass[k]}")}
-puts;puts("#{$counts[0]} passwords dumped, #{$counts[1]} fails, #{($counts[0]*100)/networks.length}% success")
+puts;puts("#{$counts[0]} password(s) dumped, #{$counts[1]} fail(s), #{($counts[0]*100)/networks.length}% success")
