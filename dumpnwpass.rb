@@ -1,15 +1,23 @@
 #!/usr/bin/ruby
 (puts "CAN HAZ R00T??? KTHXBYE!!11!";abort) if ENV['USER'] != "root"
 $DEFPATH = "/etc/NetworkManager/system-connections/"
-(puts "Good job, I can't find the folder with the passwords! Means your system is not affected :)";exit(0)) if !File.exist?($DEFPATH)
+(puts "I can't find the folder with the passwords! Means your system is not affected :)";exit(0)) if !File.exist?($DEFPATH)
 networks = `ls #{$DEFPATH}`.split("\n")
 npass = Hash.new
+
+$macs = false
+
+ARGV.each_with_index do |arg, index|
+	if arg == "-m"
+		$macs = true
+	end
+end
 
 $counts = [0,0]
 
 def is_eth?(f)
 	File.open("#{$DEFPATH}#{f}","r").each_line do |l|
-		($counts[1]+=1;return true) if l.chomp=="[ethernet]"
+		($counts[1]+=1;return true) if l.chomp=="type=ethernet"
 	end
 	false
 end
@@ -22,11 +30,18 @@ def getPass(f)
 	"<[PROBABLY PUBLIC HOTSPOT WITH PAYWALL]>"
 end
 
+def getMac(f)
+	return "" if !$macs
+	File.open("#{$DEFPATH}#{f}","r").each_line do |l|
+		($counts[0]+=1;return " | MAC = #{l.chomp.split("mac-address=")[1]}") if l.chomp.match(/^mac-address=.{1,}$/)
+	end
+end
+
 networks.each do |n|
 	if is_eth?(n)
-		npass[n] = "<[ETHERNET]>"
+		npass["#{n}#{getMac(n)}"] = "<[ETHERNET]>"
 	else
-		npass[n] = getPass(n)
+		npass["#{n}#{getMac(n)}"] = getPass(n)
 	end
 end
 
